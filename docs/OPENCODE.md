@@ -56,7 +56,7 @@ Copy the block below into an agent on the client machine, filling in the two `<â
 > on my Tailscale network.
 >
 > Facts:
-> - Base URL: `https://<SPARK>.<TAILNET>.ts.net:5000:5000/v1`
+> - Base URL: `https://<SPARK>.<TAILNET>.ts.net:5000/v1`
 > - API key (bearer): `<API_KEY>`
 > - Model id for the `model` field: `qwen3.8-flash-next`
 > - The server is TabbyAPI on a DGX Spark: an uncensored EXL3 quant of Qwen3.8-Flash-Next, 6B
@@ -64,7 +64,7 @@ Copy the block below into an agent on the client machine, filling in the two `<â
 >
 > Steps:
 > 1. Verify reachability from this machine:
->    `curl -s https://<SPARK>.<TAILNET>.ts.net:5000:5000/v1/models -H "Authorization: Bearer <API_KEY>"`
+>    `curl -s https://<SPARK>.<TAILNET>.ts.net:5000/v1/models -H "Authorization: Bearer <API_KEY>"`
 >    Expect JSON containing `"id": "qwen38-flash-next-unc-3bpw"` and `"n_ctx": 262144`. If it fails,
 >    confirm Tailscale is up here and that the Spark reports `tailscale serve status` with port 5000
 >    mapped; report the exact error and stop.
