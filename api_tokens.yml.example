@@ -1,0 +1,6 @@
+# TabbyAPI API keys. Copy to api_tokens.yml (gitignored) and replace the values.
+# Generate with:  python -c "import secrets; print(secrets.token_urlsafe(32))"
+# Changes are picked up by a running server automatically.
+api_key:
+  - "CHANGE-ME-user-key"
+admin_key: "CHANGE-ME-admin-key"

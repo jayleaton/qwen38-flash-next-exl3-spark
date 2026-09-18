@@ -1,0 +1,7 @@
+# local
+.env
+api_tokens.yml
+*.log
+bench_*.log
+__pycache__/
+*.pyc

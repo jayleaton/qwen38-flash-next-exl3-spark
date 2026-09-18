@@ -1,0 +1,32 @@
+name: qwen38-flash-next-exl3
+
+services:
+  qwen:
+    # Local build by default. Once the image is published, replace this with the
+    # registry reference and drop `build:`, e.g.:
+    #   image: ghcr.io/jayleaton/qwen38-flash-next-exl3-spark:3bpw
+    image: qwen38-flash-next-exl3:3bpw
+    build: .
+    container_name: qwen38-flash-next-exl3
+    gpus: all                 # GB10: full unified memory + GPU
+    ipc: host                 # ExLlamaV3 uses /dev/shm for its handoff buffers
+    restart: unless-stopped
+    stop_grace_period: 30s
+    ports:
+      # loopback only by default; expose via Tailscale (see README)
+      - "127.0.0.1:5000:5000"
+    environment:
+      MODEL_DIR: /model
+      # pin to the 10 Cortex-X925 big cores (GB10: 10 big + 10 little)
+      CPUSET: "5-9,15-19"
+      # Kernel/tuning knobs are baked into the image env; override here if needed:
+      # EXL3_MOE_COOP_WIDE: "1"
+      # EXL3_GR_INT8: "1"
+      # EXL3_MTP_HEAD_N: "65536"
+    volumes:
+      # TabbyAPI resolves model_dir / model_name, so mount the pack as that subdir.
+      - ${MODEL_DIR:?set MODEL_DIR in .env}:/models/qwen38-flash-next-unc-3bpw:ro
+      - ./api_tokens.yml:/opt/tabbyAPI/api_tokens.yml:ro
+    ulimits:
+      memlock: -1
+      nofile: 1048576
