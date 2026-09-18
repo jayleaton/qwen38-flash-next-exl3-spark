@@ -238,6 +238,46 @@ for build args, verification, and how to publish to GHCR.
 
 ---
 
+## Concurrency
+
+opencode spins up parallel subagents, so concurrency matters as much as single-stream speed.
+Measured on one Spark (400-token code prompt, `tools/bench_concurrency.py`, `draft_num_tokens: 3`):
+
+| Simultaneous streams | Aggregate | Per stream |
+| --- | ---: | ---: |
+| 1 | 76 tok/s | **79 tok/s** |
+| 2 | 126 tok/s | 66 tok/s |
+| 4 | **131 tok/s** | 33 tok/s |
+| 8 | 126 tok/s (two waves of 4) | 16 tok/s |
+
+With **`max_batch_size: 1`** (the previous default) the aggregate is ~**77 tok/s no matter how many
+streams** — requests simply queue, which is why a single agent looked fine and parallel subagents did
+not. Raising it to **4** gives ~**1.7× aggregate** and leaves single-stream speed untouched; 8 gains
+nothing more on this box (decode is memory-bandwidth bound at ~273 GB/s).
+
+So: `max_batch_size: 4` + `draft_num_tokens: 3` (keeps the MTP verify shape `q = N·(k+1) = 16` in the
+cheap band). For a single deep-context job, set `max_batch_size: 1` and keep the full `cache_size`.
+
+---
+
+## Monitoring (spark-dash)
+
+The image follows a small standard so it can be discovered and controlled by a dashboard:
+it publishes the OpenAI API on `5000`, a metrics endpoint on `8787`, and declares
+`spark.model` / `spark.stats_port` / `spark.inference_port` Docker labels. See
+[docs/STANDARD.md](docs/STANDARD.md).
+
+Set them up:
+
+```bash
+# on each model machine
+python3 spark_host.py --config host.json     # machine + model state, start/stop controls (:8786)
+# on your main machine
+python3 dashboard/server.py --config machines.json   # the collective UI (:8788)
+```
+
+---
+
 ## Notes and limits
 
 - **Single stream is the fast path.** `max_batch_size: 1`; this is a personal/agent endpoint, not a

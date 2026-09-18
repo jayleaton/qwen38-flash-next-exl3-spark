@@ -5,3 +5,4 @@ api_tokens.yml
 bench_*.log
 __pycache__/
 *.pyc
+logs/

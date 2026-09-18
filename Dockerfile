@@ -68,10 +68,14 @@ RUN pip install "uvloop>=0.21"
 COPY config.yml /opt/tabbyAPI/config.yml
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY scripts/advise-model-files.py /usr/local/bin/advise-model-files.py
+# spark-stats: the in-image metrics endpoint (see docs/STANDARD.md)
+COPY stats/spark_stats.py /opt/spark-stats/spark_stats.py
+COPY stats/container.json /opt/spark-stats.json
 RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/advise-model-files.py
 
 WORKDIR /opt/tabbyAPI
-EXPOSE 5000
+# 5000 = OpenAI API, 8787 = spark-stats metrics
+EXPOSE 5000 8787
 
 # tini reaps the process group so SIGTERM stops the server cleanly.
 ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/entrypoint.sh"]

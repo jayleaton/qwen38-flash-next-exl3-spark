@@ -1,5 +1,10 @@
 # TabbyAPI config for Qwen3.8-Flash-Next (uncensored EXL3) on one DGX Spark.
-# Measured 79.6-79.9 tok/s single-stream with the MTP drafter on (see README).
+#
+# Measured on one Spark (see README "Concurrency"):
+#   max_batch_size 1  -> ~77 tok/s aggregate no matter how many streams (requests queue)
+#   max_batch_size 4  -> ~126-131 tok/s aggregate, single-stream still ~79 tok/s
+#   max_batch_size 8  -> no further gain (memory-bandwidth bound); use 4
+# draft_num_tokens 3 at batch 4 keeps the MTP verify shape q = N*(k+1) = 16.
 #
 # Note on draft confidence: chat.py used "-dds -dc 0.6"; TabbyAPI's dynamic draft
 # uses exllamav3's default 0.4 and does not expose the confidence knob. For code
@@ -31,7 +36,7 @@ model:
   ngram_ram: true
   # Qwen4Exp raises NotImplementedError under tensor parallel
   tensor_parallel: false
-  max_batch_size: 1
+  max_batch_size: 4
   tool_format: qwen3_coder
   reasoning: true
   reasoning_start_token: "<think>"
@@ -40,7 +45,7 @@ model:
 draft_model:
   # the model's built-in MTP head as the drafter (chat.py "-mtp")
   draft_mode: mtp
-  draft_num_tokens: 5      # "-ndt 5"
+  draft_num_tokens: 3      # 3 at batch 4: verify q = N*(k+1) = 16
   dynamic_draft: true      # "-dds"
 
 sampling:

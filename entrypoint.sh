@@ -20,6 +20,14 @@ fi
 echo "entrypoint: advising model pages for $MODEL_PATH"
 /usr/local/bin/advise-model-files.py "$MODEL_PATH" || true
 
+# spark-stats: expose machine + model metrics from inside the container on 8787.
+# It reads TabbyAPI's own log files (logs/*.log, UTC) for tokens/sec and draft
+# acceptance, and /props for context + slots. See docs/STANDARD.md.
+if [ -f /opt/spark-stats/spark_stats.py ]; then
+  echo "entrypoint: starting spark-stats on :8787"
+  python3 /opt/spark-stats/spark_stats.py --config /opt/spark-stats.json &
+fi
+
 cd /opt/tabbyAPI
 if [ -n "$CPUSET" ]; then
   echo "entrypoint: taskset -c $CPUSET"

@@ -1,0 +1,16 @@
+{
+  "listen": "0.0.0.0",
+  "port": 8787,
+  "poll_seconds": 2,
+  "disk_path": "/",
+  "targets": [
+    {
+      "name": "Qwen3.8-Flash-Next (uncensored EXL3)",
+      "type": "tabbyapi",
+      "url": "http://127.0.0.1:5000",
+      "key_file": "/opt/tabbyAPI/api_tokens.yml",
+      "log": {"type": "file", "path": "/opt/tabbyAPI/logs", "tz": "UTC"},
+      "window_s": 300
+    }
+  ]
+}

@@ -15,6 +15,15 @@ services:
     ports:
       # loopback only by default; expose via Tailscale (see README)
       - "127.0.0.1:5000:5000"
+      # spark-stats metrics endpoint (see docs/STANDARD.md)
+      - "127.0.0.1:8787:8787"
+    # The spark image standard: these labels let a `spark-host` agent on this
+    # machine discover, report and control the model.
+    labels:
+      spark.model: "qwen38-flash-next"
+      spark.name: "Qwen3.8-Flash-Next (uncensored EXL3)"
+      spark.stats_port: "8787"
+      spark.inference_port: "5000"
     environment:
       MODEL_DIR: /model
       # pin to the 10 Cortex-X925 big cores (GB10: 10 big + 10 little)
@@ -27,6 +36,10 @@ services:
       # TabbyAPI resolves model_dir / model_name, so mount the pack as that subdir.
       - ${MODEL_DIR:?set MODEL_DIR in .env}:/models/qwen38-flash-next-unc-3bpw:ro
       - ./api_tokens.yml:/opt/tabbyAPI/api_tokens.yml:ro
+      # editing config.yml only needs `docker compose restart` (no rebuild)
+      - ./config.yml:/opt/tabbyAPI/config.yml:ro
+      # TabbyAPI's own log files (tokens/sec, draft acceptance) on the host
+      - ./logs:/opt/tabbyAPI/logs
     ulimits:
       memlock: -1
       nofile: 1048576
