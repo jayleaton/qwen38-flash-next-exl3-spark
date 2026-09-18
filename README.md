@@ -253,7 +253,9 @@ Measured on one Spark (400-token code prompt, `tools/bench_concurrency.py`, `dra
 With **`max_batch_size: 1`** (the previous default) the aggregate is ~**77 tok/s no matter how many
 streams** — requests simply queue, which is why a single agent looked fine and parallel subagents did
 not. Raising it to **4** gives ~**1.7× aggregate** and leaves single-stream speed untouched; 8 gains
-nothing more on this box (decode is memory-bandwidth bound at ~273 GB/s).
+nothing more on this box (decode is memory-bandwidth bound at ~273 GB/s). Batching is **dynamic**:
+slots are only occupied when requests actually overlap, so a lone request still gets the full rate.
+Repeated single-stream runs at `max_batch_size: 4` measured **77.5 / 78.5 / 79.5 tok/s**.
 
 So: `max_batch_size: 4` + `draft_num_tokens: 3` (keeps the MTP verify shape `q = N·(k+1) = 16` in the
 cheap band). For a single deep-context job, set `max_batch_size: 1` and keep the full `cache_size`.
