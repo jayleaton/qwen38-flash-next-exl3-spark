@@ -279,6 +279,7 @@ scripts/download-model.sh      fetch the EXL3 pack
 scripts/advise-model-files.py  unprivileged page-cache drop for the model
 scripts/start.sh               host convenience wrapper (docker compose + tailscale serve)
 examples/openai_client.py      OpenAI Python client example
+docs/OPENCODE.md               opencode provider config + hand-off prompt
 docs/FINDINGS.md               why ngram_ram is required; measured split; tuning
 docs/BUILD.md                  building and publishing the image
 ```
