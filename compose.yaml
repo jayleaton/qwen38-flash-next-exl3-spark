@@ -37,7 +37,8 @@ services:
       - ${MODEL_DIR:?set MODEL_DIR in .env}:/models/qwen38-flash-next-unc-3bpw:ro
       - ./api_tokens.yml:/opt/tabbyAPI/api_tokens.yml:ro
       # editing config.yml only needs `docker compose restart` (no rebuild)
-      - ./config.yml:/opt/tabbyAPI/config.yml:ro
+      # pick a preset: CONFIG_FILE=configs/4-stream.yml (see configs/)
+      - ./${CONFIG_FILE:-config.yml}:/opt/tabbyAPI/config.yml:ro
       # TabbyAPI's own log files (tokens/sec, draft acceptance) on the host
       - ./logs:/opt/tabbyAPI/logs
     ulimits:

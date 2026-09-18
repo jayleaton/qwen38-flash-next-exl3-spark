@@ -238,27 +238,31 @@ for build args, verification, and how to publish to GHCR.
 
 ---
 
-## Concurrency
+## Concurrency — choose a preset
 
 opencode spins up parallel subagents, so concurrency matters as much as single-stream speed.
-Measured on one Spark (400-token code prompt, `tools/bench_concurrency.py`, `draft_num_tokens: 3`):
+Model images ship selectable presets; **single-stream speed is the same in all of them** (batching is
+dynamic — slots are only used when requests actually overlap).
 
-| Simultaneous streams | Aggregate | Per stream |
-| --- | ---: | ---: |
-| 1 | 76 tok/s | **79 tok/s** |
-| 2 | 126 tok/s | 66 tok/s |
-| 4 | **131 tok/s** | 33 tok/s |
-| 8 | 126 tok/s (two waves of 4) | 16 tok/s |
+| Preset (choose one) | Single stream | Concurrent | How |
+| --- | ---: | --- | --- |
+| `configs/1-stream.yml` | ~78 tok/s | extra requests queue (~75 aggregate) | one deep-context job |
+| `configs/2-stream.yml` | ~78 tok/s | ~90–115 tok/s aggregate across 2 (per-stream ~65) | two agents |
+| `configs/4-stream.yml` (default) | ~78 tok/s | ~115–134 tok/s aggregate across 4 (per-stream ~42–57) | parallel subagents |
 
-With **`max_batch_size: 1`** (the previous default) the aggregate is ~**77 tok/s no matter how many
-streams** — requests simply queue, which is why a single agent looked fine and parallel subagents did
-not. Raising it to **4** gives ~**1.7× aggregate** and leaves single-stream speed untouched; 8 gains
-nothing more on this box (decode is memory-bandwidth bound at ~273 GB/s). Batching is **dynamic**:
-slots are only occupied when requests actually overlap, so a lone request still gets the full rate.
-Repeated single-stream runs at `max_batch_size: 4` measured **77.5 / 78.5 / 79.5 tok/s**.
+```bash
+CONFIG_FILE=configs/4-stream.yml docker compose up -d      # or 1-stream / 2-stream
+```
 
-So: `max_batch_size: 4` + `draft_num_tokens: 3` (keeps the MTP verify shape `q = N·(k+1) = 16` in the
-cheap band). For a single deep-context job, set `max_batch_size: 1` and keep the full `cache_size`.
+Measured on one Spark, 400-token code prompt, `draft_num_tokens` tuned per preset (5 / 4 / 3 so the
+MTP verify shape `q = N·(k+1)` stays in the cheap band). With `max_batch_size: 1` the aggregate is
+~77 tok/s no matter how many streams — requests simply queue, which is why a single agent looked
+fine and parallel subagents did not. 8 streams gains nothing more (decode is memory-bandwidth bound
+at ~273 GB/s).
+
+> **Warm each concurrency level after a restart.** The first request at an unseen batch shape pays
+> MTP CUDA-graph capture and is slow (~20 s); send one throwaway request at each level before
+> measuring or benchmarking.
 
 ---
 

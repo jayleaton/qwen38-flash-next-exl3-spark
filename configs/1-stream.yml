@@ -1,0 +1,52 @@
+# PRESET: 1-stream
+#   single stream : ~78 tok/s
+#   1 concurrent: extra requests queue (~75 tok/s aggregate)
+# Select with:  CONFIG_FILE=configs/1-stream.yml docker compose up -d
+# First request at each concurrency level is slow (MTP CUDA-graph capture); warm it.
+
+network:
+  host: 0.0.0.0            # restrict at the host/tailnet layer (see README)
+  port: 5000
+  disable_auth: false
+  # keep CORS empty unless a browser client needs it
+  allowed_origins: []
+
+model:
+  model_name: qwen38-flash-next-unc-3bpw
+  backend: exllamav3
+  # TabbyAPI resolves the model as model_dir / model_name, so the pack is mounted
+  # as a named subdirectory (see compose.yaml). Aliases below are what clients may
+  # put in the "model" field.
+  model_dir: /models
+  dummy_model_names:
+    - "Qwen3.8-Flash-Next-Uncensored-exl3-3bpw"
+    - "qwen3.8-flash-next"
+  # 262,144 = the model's trained window (needle exact to ~240k)
+  cache_size: 262144
+  # 8-bit KV: 12 KB/token on this geometry, 3 GB for the whole window
+  cache_mode: "8,8"
+  # REQUIRED for this pack: the n-gram (PLE) table is unsharded (one 19.8 GB
+  # file). Without this the table streams rows from disk per forward and decode
+  # collapses from ~80 to ~21 tok/s. (This is the "-ngr" flag.)
+  ngram_ram: true
+  # Qwen4Exp raises NotImplementedError under tensor parallel
+  tensor_parallel: false
+  max_batch_size: 1
+  tool_format: qwen3_coder
+  reasoning: true
+  reasoning_start_token: "<think>"
+  reasoning_end_token: "</think>"
+
+draft_model:
+  # the model's built-in MTP head as the drafter (chat.py "-mtp")
+  draft_mode: mtp
+  draft_num_tokens: 5      # single stream, full draft depth
+  dynamic_draft: true      # "-dds"
+
+sampling:
+  # greedy by default for reproducible benchmarks; clients may override per request
+  override_preset: null
+
+logging:
+  log_prompt: false
+  log_generation_params: false
