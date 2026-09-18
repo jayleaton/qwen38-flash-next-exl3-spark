@@ -129,14 +129,14 @@ If your decode is ~20 tok/s rather than ~80, jump straight to Troubleshooting â€
 Keep the container on loopback and let Tailscale provide transport + identity:
 
 ```bash
-# on the Spark
-tailscale serve --bg 5000            # https://<spark>.<tailnet>.ts.net  ->  127.0.0.1:5000
-tailscale serve status
+# on the Spark: give it its own tailnet HTTPS port (do not reuse an existing one)
+sudo tailscale serve --bg --https=5000 http://127.0.0.1:5000
+tailscale serve status            # -> https://<spark>.<tailnet>.ts.net:5000
 ```
 
 ```bash
 # on the client
-export OPENAI_BASE_URL="https://<spark>.<tailnet>.ts.net/v1"
+export OPENAI_BASE_URL="https://<spark>.<tailnet>.ts.net:5000/v1"
 export OPENAI_API_KEY="$KEY"
 ```
 

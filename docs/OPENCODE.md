@@ -7,8 +7,8 @@ Prerequisite on the **Spark**: expose the loopback port over Tailscale.
 
 ```bash
 # on the DGX Spark
-tailscale serve --bg 5000
-tailscale serve status          # -> https://<spark>.<tailnet>.ts.net -> 127.0.0.1:5000
+sudo tailscale serve --bg --https=5000 http://127.0.0.1:5000
+tailscale serve status          # -> https://<spark>.<tailnet>.ts.net:5000 -> 127.0.0.1:5000
 ```
 
 Then, on the client machine, `~/.config/opencode/opencode.json`:
@@ -21,7 +21,7 @@ Then, on the client machine, `~/.config/opencode/opencode.json`:
       "npm": "@ai-sdk/openai-compatible",
       "name": "DGX Spark — Qwen3.8-Flash-Next (uncensored EXL3)",
       "options": {
-        "baseURL": "https://<spark>.<tailnet>.ts.net/v1",
+        "baseURL": "https://<spark>.<tailnet>.ts.net:5000/v1",
         "apiKey": "{env:DGX_QWEN_API_KEY}"
       },
       "models": {
