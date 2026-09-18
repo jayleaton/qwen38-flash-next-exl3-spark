@@ -5,12 +5,15 @@
 - `nvidia/cuda:13.0.2-devel-ubuntu24.04` (arm64) — `-devel` because exllamav3 is compiled for
   **sm_121** at build time (no aarch64 release wheels exist).
 - Python 3.12 venv at `/opt/venv`, `torch==2.14.0+cu130` (aarch64 wheels from the cu130 index).
-- `vcruz305/exllamav3@523ecd3` (v1.5.0) built with `TORCH_CUDA_ARCH_LIST=12.1`, plus its
-  `requirements.txt`.
-- `theroyallab/tabbyAPI` (`main`) — the OpenAI-compatible server.
+- [vcruz305/exllamav3@523ecd3](https://github.com/vcruz305/exllamav3/commit/523ecd3) (v1.5.0) built
+  with `TORCH_CUDA_ARCH_LIST=12.1`, plus its `requirements.txt`.
+  Upstream: [turboderp-org/exllamav3](https://github.com/turboderp-org/exllamav3).
+- [theroyallab/tabbyAPI](https://github.com/theroyallab/tabbyAPI) (`main`) — the OpenAI-compatible
+  server.
 - `config.yml`, `entrypoint.sh`, `scripts/advise-model-files.py`.
 
-The model is **not** in the image; it is mounted at `/model`.
+The model is **not** in the image; it is mounted at `/models/qwen38-flash-next-unc-3bpw`.
+See the [Credits](../README.md#credits) section for the full attribution list.
 
 ## Build
 

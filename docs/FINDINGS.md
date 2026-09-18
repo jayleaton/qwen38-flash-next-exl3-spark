@@ -1,5 +1,11 @@
 # FINDINGS — tuning Qwen3.8-Flash-Next uncensored EXL3 on one Spark
 
+Engine: [vcruz305/exllamav3](https://github.com/vcruz305/exllamav3/commit/523ecd3) (a fork of
+[turboderp-org/exllamav3](https://github.com/turboderp-org/exllamav3) with GB10 changes).
+Tuning baseline: [vcruz305/Qwen3.8-Flash-Next-EXL3-DGX-Spark-recipe](https://github.com/vcruz305/Qwen3.8-Flash-Next-EXL3-DGX-Spark-recipe).
+Pack: [Lygodactylus/Qwen3.8-Flash-Next-Uncensored-exl3-3bpw](https://huggingface.co/Lygodactylus/Qwen3.8-Flash-Next-Uncensored-exl3-3bpw).
+See the repo [Credits](../README.md#credits).
+
 All numbers: single stream, greedy (`top_k=1`), 400 new tokens, after dropping the model's page
 cache, on one DGX Spark (GB10, 121 GiB unified, ~273 GB/s).
 

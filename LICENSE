@@ -24,10 +24,17 @@ SOFTWARE.
 
 Third-party components used by the container image (not covered by the above):
 
-- exllamav3 (vcruz305 fork, upstream turboderp-org) - MIT
-- TabbyAPI (theroyallab) - AGPL-3.0
-- Qwen3.8-Flash-Next weights (Qwen) and the uncensored re-quant (Lygodactylus) -
-  see the model cards
+- exllamav3 (vcruz305 fork) — MIT
+  https://github.com/vcruz305/exllamav3 (commit 523ecd3)
+- exllamav3 (upstream) — MIT
+  https://github.com/turboderp-org/exllamav3
+- TabbyAPI — AGPL-3.0
+  https://github.com/theroyallab/tabbyAPI
+- Single-Spark tuning recipe — see repository
+  https://github.com/vcruz305/Qwen3.8-Flash-Next-EXL3-DGX-Spark-recipe
+- Model weights — Qwen3.8-Flash-Next (Qwen) and the uncensored re-quant (Lygodactylus)
+  https://huggingface.co/Qwen/Qwen3.8-Flash-Next
+  https://huggingface.co/Lygodactylus/Qwen3.8-Flash-Next-Uncensored-exl3-3bpw
 
 The container image redistributes TabbyAPI, so the combined image is subject to
 AGPL-3.0. Revisit this LICENSE before publishing the image.

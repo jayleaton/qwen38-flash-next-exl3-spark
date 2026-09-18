@@ -17,10 +17,10 @@ cache. See [Expected results](#expected-results).
 
 | | |
 | --- | --- |
-| Model | `Lygodactylus/Qwen3.8-Flash-Next-Uncensored-exl3-3bpw` — EXL3 3.05 bpw, 72.4 GB |
+| Model | [`Lygodactylus/Qwen3.8-Flash-Next-Uncensored-exl3-3bpw`](https://huggingface.co/Lygodactylus/Qwen3.8-Flash-Next-Uncensored-exl3-3bpw) — EXL3 3.05 bpw, 72.4 GB |
 | Architecture | `Qwen4ExpForConditionalGeneration` — 125B LM + 51B n-gram + 4B MTP, **6B active**/token |
-| Engine | exllamav3 fork `vcruz305/exllamav3@523ecd3` (v1.5.0) compiled for **sm_121** |
-| Server | TabbyAPI — `/v1/chat/completions`, `/v1/completions`, `/v1/models`, streaming, tool calls |
+| Engine | exllamav3 fork [`vcruz305/exllamav3@523ecd3`](https://github.com/vcruz305/exllamav3/commit/523ecd3) (v1.5.0) compiled for **sm_121** |
+| Server | [TabbyAPI](https://github.com/theroyallab/tabbyAPI) — `/v1/chat/completions`, `/v1/completions`, `/v1/models`, streaming, tool calls |
 | Spec decode | MTP drafter (`ndt=5`), dynamic draft, 8-bit KV |
 | Context | 262,144 native (needle exact to ~240k) |
 
@@ -248,6 +248,25 @@ for build args, verification, and how to publish to GHCR.
   image is exllamav3 end to end.
 - **Licensing.** Our glue is MIT. The image bundles TabbyAPI (**AGPL-3.0**) and exllamav3 (MIT); the
   weights are `Lygodactylus` (see the model card). Confirm terms before redistributing the image.
+
+## Credits
+
+This repo is packaging and glue around other people's work. The credit belongs to:
+
+| Contribution | Source |
+| --- | --- |
+| Base model — Qwen3.8-Flash-Next | [Qwen/Qwen3.8-Flash-Next](https://huggingface.co/Qwen/Qwen3.8-Flash-Next) (Qwen team) |
+| Uncensored EXL3 re-quant (the pack this serves) | [Lygodactylus/Qwen3.8-Flash-Next-Uncensored-exl3-3bpw](https://huggingface.co/Lygodactylus/Qwen3.8-Flash-Next-Uncensored-exl3-3bpw) |
+| EXL3 quant format, kernels, upstream engine | [turboderp-org/exllamav3](https://github.com/turboderp-org/exllamav3) (turboderp) |
+| GB10 / aarch64 guards and the decode-kernel improvements | [vcruz305/exllamav3 `523ecd3`](https://github.com/vcruz305/exllamav3/commit/523ecd3) |
+| The single-Spark tuning that gets ~80 tok/s (MTP `ndt=5`, dynamic draft, 8-bit KV, int8 mixers, core pinning) | [vcruz305/Qwen3.8-Flash-Next-EXL3-DGX-Spark-recipe](https://github.com/vcruz305/Qwen3.8-Flash-Next-EXL3-DGX-Spark-recipe) — Cruz ([@ViC305](https://x.com/ViC305)) |
+| OpenAI-compatible HTTP server | [theroyallab/tabbyAPI](https://github.com/theroyallab/tabbyAPI) |
+| Reference single-Spark Docker/recipe workflow this image follows | the GLM-5.3-Flash EXL3 DGX image (`ghcr.io/0xsero/glm53-flash-exl3-plain`) |
+| Platform | NVIDIA DGX Spark (GB10), CUDA 13 |
+
+If this is useful to you, please go star and credit the upstream projects above — the measured
+performance here is their work, not ours. `ngram_ram` handling and the GB10 tuning in particular come
+straight from the exllamav3 fork and its recipe.
 
 ## Repository layout
 
