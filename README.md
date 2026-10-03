@@ -1,3 +1,5 @@
+Support me here: https://buymeacoffee.com/jayleaton
+
 # Qwen3.8-Flash-Next (uncensored EXL3) — one DGX Spark
 
 A single `docker compose up` away from serving **Qwen3.8-Flash-Next** — the uncensored EXL3 re-quant
